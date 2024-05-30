@@ -1,0 +1,30 @@
+body{
+    display: flex;
+    flex-direction: column;
+    background-color: #202020;
+}
+
+button{
+    width:100px;
+    padding: 5px;
+    margin-bottom:10px ;
+    margin: auto auto 10px auto;
+}
+
+.button-wrapper{
+    margin: auto;
+}
+
+canvas{
+    background-color: black;
+    margin: auto;
+}
+
+h{
+    color: whitesmoke;
+    font-size: larger;
+}
+
+.iterations-p{
+    color: white;
+}
