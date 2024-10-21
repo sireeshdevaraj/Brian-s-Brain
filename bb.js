@@ -7,7 +7,7 @@ const step = document.getElementById("step");
 const clearButton = document.getElementById("clear");
 let board = [];
 let temp = [];
-let intervalId;
+let animationId;
 
 // -1 -> off
 // 0 -> dying
@@ -15,16 +15,18 @@ let intervalId;
 
 const boardRows =canvas.height;
 const boardColumns = boardRows;
-
-for (let r=0; r<boardRows;r++){
-
-    for (let c=0; c<boardColumns;c++){
-        temp.push(-1);        
-    }
+const cellHeight = 2;
+function createBoard(){
+    board = [];
+    for (let r=0; r<boardRows;r++){
+        for (let c=0; c<boardColumns;c++){
+            temp.push(-1);        
+        }
     board.push(temp);
     temp = [];   
+    }
 }
-
+createBoard();
 
 function checkCells(row,col,newBoard,board){
     let stateValue = 0;
@@ -80,13 +82,13 @@ function BB(){
         for (let j=0;j<boardColumns;j++){
             if (nextBoard[i][j] == 1){
                 ctx.fillStyle = "white";
-                ctx.fillRect(10*i,10*j,10,10)
+                ctx.fillRect(cellHeight*i,cellHeight*j,cellHeight,cellHeight)
             }else if(nextBoard[i][j] == 0){
                 ctx.fillStyle = "blue";
-                ctx.fillRect(10*i,10*j,10,10)
+                ctx.fillRect(cellHeight*i,cellHeight*j,cellHeight,cellHeight)
             }else if(nextBoard[i][j] == -1){
                 ctx.fillStyle = "black";
-                ctx.fillRect(10*i,10*j,10,10);
+                ctx.fillRect(cellHeight*i,cellHeight*j,cellHeight,cellHeight);
             }
         }
     }
@@ -95,6 +97,7 @@ function BB(){
         document.getElementById("iterations").innerHTML = iterations;
     }catch(error){console.log(error)}
         board = nextBoard;
+        animationId = requestAnimationFrame(BB);
 }
 
 
@@ -105,50 +108,51 @@ function BB(){
 
 canvas.addEventListener("mousemove",(event)=>{
     if (event.buttons == 1){
-        let col = Math.floor(event.offsetX/10);
-        let row = Math.floor(event.offsetY/10);
+        let col = Math.floor(event.offsetX/cellHeight);
+        let row = Math.floor(event.offsetY/cellHeight);
         ctx.fillStyle = "white";
-        ctx.fillRect(10*col,10*row,10,10);
+        ctx.fillRect(cellHeight*col,cellHeight*row,cellHeight,cellHeight);
         board[col][row] = 1;
     }
     if (event.buttons == 2){
-        let col = Math.floor(event.offsetX/10);
-        let row = Math.floor(event.offsetY/10);
+        let col = Math.floor(event.offsetX/cellHeight);
+        let row = Math.floor(event.offsetY/cellHeight);
         ctx.fillStyle = "black";
-        ctx.fillRect(10*col,10*row,10,10);
+        ctx.fillRect(cellHeight*col,cellHeight*row,cellHeight,cellHeight);
         board[col][row] = -1;
     }
 })
 
 canvas.addEventListener("click",(event)=>{
-    let col = Math.floor(event.offsetX/10);
-    let row = Math.floor(event.offsetY/10);
+    let col = Math.floor(event.offsetX/cellHeight);
+    let row = Math.floor(event.offsetY/cellHeight);
     ctx.fillStyle = "white";
-    ctx.fillRect(10*col,10*row,10,10);
+    ctx.fillRect(cellHeight*col,cellHeight*row,cellHeight,cellHeight);
     board[col][row] = 1;
     
 })
 
 btn.addEventListener("click",(event)=>{
-    intervalId = setInterval(() => {
+    /*intervalId = setInterval(() => {
         BB();
-    },100)    
+    },100)    */
+    animationId = requestAnimationFrame(BB);
 })
 
-step.addEventListener("click",(event)=>{
-    BB();
-})
 
 const pauseButton = document.getElementById("pause");
 pauseButton.addEventListener("click",()=>{
     try{
-        if (intervalId) clearInterval(intervalId);
+        if (animationId) cancelAnimationFrame(animationId);
     }catch(error){
         console.log("Error in Pausing the simulation",error);
     }
 })
 
 clearButton.addEventListener("click",()=> {
-    if (intervalId) clearInterval(intervalId);
+    if (animationId) cancelAnimationFrame(animationId);
     ctx.clearRect(0,0,canvas.width,canvas.height);
+    iterations = 0;
+    document.getElementById("iterations").innerHTML = iterations;
+    createBoard();
 })
